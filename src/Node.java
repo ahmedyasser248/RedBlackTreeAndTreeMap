@@ -82,4 +82,38 @@ public class Node<T extends Comparable<T>, V> implements INode<T ,V>  {
     public boolean isNull() {
         return key==null;
     }
+    public static void main (String []args){
+       Node<String ,Integer> nodeA = new Node<>("A",3);
+       Node<String ,Integer> nodeB = new Node<>("B",4);
+       Node<String ,Integer> nodeC = new Node<>("C",5);
+       Node<String ,Integer> nodeD = new Node<>("D",6);
+       Node<String ,Integer> nodeE = new Node<>("E",9);
+       Node<String ,Integer> nodeF = new Node<>("F",10);
+       Node<String ,Integer> nodeG = new Node<>("G",11);
+      // nodeA.setParent(new Node<>());
+       nodeA.setLeftChild(nodeB);
+       nodeA.setRightChild(nodeC);
+       nodeB.setParent(nodeA);
+       nodeB.setLeftChild(nodeD);
+       nodeB.setRightChild(nodeE);
+       nodeC.setParent(nodeA);
+       nodeC.setLeftChild(nodeF);
+       nodeC.setRightChild(nodeG);
+       nodeG.setParent(nodeC);
+       nodeF.setParent(nodeC);
+       nodeE.setParent(nodeB);
+       nodeD.setParent(nodeB);
+       nodeD.setLeftChild(new Node<>());
+       nodeD.setRightChild(new Node<>());
+       nodeE.setLeftChild(new Node<>());
+       nodeE.setRightChild(new Node<>());
+       nodeF.setLeftChild(new Node<>());
+       nodeF.setRightChild(new Node<>());
+       nodeG.setLeftChild(new Node<>());
+       nodeG.setRightChild(new Node<>());
+       RedBlackTree<String,Integer> redBlackTree = new RedBlackTree<>(nodeA);
+       redBlackTree.rotateRight(redBlackTree.root,nodeB);
+       redBlackTree.rotateRight(redBlackTree.root,nodeC);
+       redBlackTree.print(redBlackTree.root);
+    }
 }
