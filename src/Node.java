@@ -84,15 +84,13 @@ public class Node<T extends Comparable<T>, V> implements INode<T ,V>  {
         return key==null;
     }
     public static void main (String []args){
-       RedBlackTree<Integer,Integer> redBlackTree = new RedBlackTree<>();
-       redBlackTree.insert(6,1);
-       redBlackTree.insert(4,1);
-       redBlackTree.insert(5,4);
-       redBlackTree.insert(3,3);
-       redBlackTree.insert(9,1);
-       redBlackTree.insert(8,4);
-       redBlackTree.insert(7,3);
-       redBlackTree.insert(10,2);
-       redBlackTree.print(redBlackTree.root);
+        RedBlackTree<Integer,Integer> obj = new RedBlackTree<>();
+        obj.insert(30,1500);
+        obj.insert(20,1500);
+        obj.insert(40,1500);
+        obj.insert(35,1500);
+        obj.insert(50,1500);
+        obj.rotateLeft(obj.getRoot());
+        obj.print(obj.root);
     }
 }

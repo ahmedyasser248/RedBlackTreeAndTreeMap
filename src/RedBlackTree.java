@@ -37,8 +37,12 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
         Node<T,V> newNode = new Node<>(key,value);
         newNode.setRightChild(new Node<>());
         newNode.setLeftChild(new Node<>());
-        this.root= insertAsBST(this.root,newNode);
-
+        if(this.root.isNull()){
+            this.root=newNode;
+            newNode.setParent(new Node<>());
+        }else {
+            this.root = insertAsBST(this.root, newNode);
+        }
     }
 
     @Override
