@@ -14,7 +14,7 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
 
     @Override
     public boolean isEmpty() {
-        return root == null;
+        return root.isNull();
     }
 
     @Override
