@@ -22,14 +22,36 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
         this.root=new Node<>();
     }
 
+
+    private INode<T,V> searchNode(T key){
+        INode<T,V> n=this.root;
+        while(n.getKey()!=null){//Search for the node to be deleted
+            if(key.compareTo(n.getKey())==0){//The node to be deleted was found
+                return n;
+            }
+            else if(key.compareTo(n.getKey())<0){
+                n=n.getLeftChild();
+            }
+            else if(key.compareTo(n.getKey())>0){
+                n=n.getRightChild();
+            }
+        }
+        return n;
+    }
+
     @Override
     public V search(T key) {
-        return null;
+        INode<T,V> result=searchNode(key);
+        return result.getValue();
     }
 
     @Override
     public boolean contains(T key) {
-        return false;
+        INode<T,V> result=searchNode(key);
+        if(result.getKey()==null){
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -42,10 +64,94 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
 
     }
 
+    private INode<T,V> getSuccessor(INode node){
+        INode<T,V> n=node.getRightChild();
+        while(n.getLeftChild().getKey()!=null){
+            n=n.getLeftChild();
+        }
+        return n;
+    }
     @Override
     public boolean delete(T key) {
-        return false;
+        INode<T,V> result=searchNode(key);//result contains the node to be deleted
+        if(result.getKey()!=null){//if the node to be deleted is in the tree
+
+            INode<T,V> child;
+            if(result.getLeftChild().getKey()==null){//The left child of the node is null
+                child=result.getRightChild();
+            }
+
+            else if (result.getRightChild().getKey()==null){//the right child of the node is null
+                child=result.getLeftChild();
+            }
+            else {//Node is not a leaf node
+                INode<T,V> successor=getSuccessor(result);
+                result.setValue(successor.getValue());
+                result=successor;
+                child=successor.getRightChild();
+            }
+            INode<T,V> grandParent=result.getParent();
+            INode<T,V> sibling;
+            Boolean parentColor=result.getColor();
+            Boolean childColor=child.getColor();
+
+            if(result.getKey().compareTo(grandParent.getKey())>0){
+                grandParent.setRightChild(child);
+                sibling=grandParent.getLeftChild();
+            }
+            else {
+                grandParent.setLeftChild(child);
+                sibling=grandParent.getRightChild();
+            }
+            if(parentColor==INode.RED||childColor==INode.RED){
+                child.setColor(INode.BLACK);
+            }
+            else {
+                boolean case1 = false;
+                while(!case1){//TODO set case1 to true at the end of case1
+                    if (sibling.getColor() == INode.RED) {//CASE 3
+                        grandParent.setColor(INode.RED);
+                        sibling.setColor(INode.BLACK);
+                        if (grandParent.getLeftChild() == sibling) {
+                            rotateRight(sibling);
+                            sibling = grandParent.getLeftChild();
+                        } else {
+                            rotateLeft(sibling);
+                            sibling = grandParent.getRightChild();
+                        }
+                        //TODO Check The sibling again
+
+
+                    } else if (sibling.getColor() == INode.BLACK) {//TODO CASE 1 CASE 2
+                        if(sibling.getLeftChild().getColor()==INode.BLACK && sibling.getRightChild().getColor()==INode.BLACK){//TODO CASE 2
+                            sibling.setColor(INode.RED);
+                            if(grandParent.getColor()==INode.RED){//END of the deletion
+                                grandParent.setColor(INode.BLACK);
+                                case1=true;
+                            }else{
+                                child=grandParent;
+                                grandParent = grandParent.getParent();
+                                if(child.getKey().compareTo(grandParent.getKey())>0){
+                                    sibling=grandParent.getLeftChild();
+                                }
+                                else {
+                                    sibling=grandParent.getRightChild();
+                                }
+                            }
+                        }  else if (true){ //TODO GABAL CASE1
+
+                        }
+                    }
+                }
+            }
+
+
+        }
+        return false;//TODO return value
     }
+
+
+
     public void rotateRight( INode<T,V> nodeToRotate){
         if(nodeToRotate.getLeftChild().isNull()){
             return;
@@ -61,8 +167,8 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
             leftChild.setParent(new Node<>());
             this.root  = leftChild;
         }else if (nodeToRotate == nodeToRotate.getParent().getLeftChild()){
-                nodeToRotate.getParent().setLeftChild(leftChild);
-                leftChild.setParent(nodeToRotate.getParent());
+            nodeToRotate.getParent().setLeftChild(leftChild);
+            leftChild.setParent(nodeToRotate.getParent());
         }else {
             nodeToRotate.getParent().setRightChild(leftChild);
             leftChild.setParent(nodeToRotate.getParent());
@@ -85,8 +191,8 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
             rightChild.setParent(new Node<>());
             this.root = rightChild;
         }else if(nodeToRotate == nodeToRotate.getParent().getLeftChild()){
-                nodeToRotate.getParent().setLeftChild(rightChild);
-                rightChild.setParent(nodeToRotate.getParent());
+            nodeToRotate.getParent().setLeftChild(rightChild);
+            rightChild.setParent(nodeToRotate.getParent());
         }else {
             nodeToRotate.getParent().setRightChild(rightChild);
             rightChild.setParent(nodeToRotate.getParent());
