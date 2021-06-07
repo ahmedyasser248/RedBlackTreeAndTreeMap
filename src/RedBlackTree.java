@@ -4,7 +4,9 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
         this.root = root;
         root.setParent(new Node<>());
     }
-
+    RedBlackTree(){
+        this.root = new Node<>();
+    }
     @Override
     public INode<T, V> getRoot() {
         return this.root;
@@ -32,7 +34,10 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
 
     @Override
     public void insert(T key, V value) {
-
+        Node<T,V> newNode = new Node<>(key,value);
+        newNode.setRightChild(new Node<>());
+        newNode.setLeftChild(new Node<>());
+        this.root= insertAsBST(this.root,newNode);
 
     }
 
@@ -40,7 +45,7 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
     public boolean delete(T key) {
         return false;
     }
-    public void rotateRight(INode<T,V> root, INode<T,V> nodeToRotate){
+    public void rotateRight( INode<T,V> nodeToRotate){
         if(nodeToRotate.getLeftChild().isNull()){
             return;
         }
@@ -64,7 +69,7 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
         leftChild.setRightChild(nodeToRotate);
         nodeToRotate.setParent(leftChild);
     }
-    public void rotateLeft(INode<T,V> root , INode<T,V> nodeToRotate){
+    public void rotateLeft( INode<T,V> nodeToRotate){
         if (nodeToRotate.getRightChild().isNull()){
             return;
         }
@@ -87,6 +92,19 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
         }
         rightChild.setLeftChild(nodeToRotate);
         nodeToRotate.setParent(rightChild);
+    }
+    public INode<T,V> insertAsBST(INode<T,V>root ,INode<T,V> newNode ){
+        if (root.isNull()){
+            return newNode;
+        }
+        if(root.getKey().compareTo(newNode.getKey())>0){
+            root.setLeftChild(insertAsBST(root.getLeftChild(),newNode));
+            root.getLeftChild().setParent(root);
+        }else{
+            root.setRightChild(insertAsBST(root.getRightChild(),newNode));
+            root.getRightChild().setParent(root);
+        }
+        return root;
     }
     public void print(INode<T,V>root){
         System.out.println(root.getKey());
