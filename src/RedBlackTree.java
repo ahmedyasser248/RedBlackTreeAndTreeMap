@@ -71,9 +71,46 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
         }
         return n;
     }
+
+    private  void rightRightDel(INode parent,INode sibling){
+        sibling.getRightChild().setColor(INode.BLACK);
+        sibling.setColor(parent.getColor());
+        parent.setColor(INode.BLACK);
+
+        rotateLeft(parent);
+    }
+
+    private  void rightLeftyDel(INode parent,INode sibling){
+        sibling.getLeftChild().setColor(INode.BLACK);
+        sibling.setColor(INode.RED);
+        INode temp = sibling.getLeftChild();
+        rotateRight(sibling);
+        sibling = temp;
+        rightRightDel(parent,sibling);
+    }
+    private  void leftLeftDel(INode parent,INode sibling){
+        sibling.getLeftChild().setColor(INode.BLACK);
+        sibling.setColor(parent.getColor());
+        parent.setColor(INode.BLACK);
+
+        rotateRight(parent);
+    }
+
+    private  void leftRightDel(INode parent,INode sibling){
+        sibling.getRightChild().setColor(INode.BLACK);
+        sibling.setColor(INode.RED);
+        INode temp = sibling.getRightChild();
+        rotateLeft(sibling);
+        sibling = temp;
+        leftLeftDel(parent,sibling);
+    }
+
     @Override
     public boolean delete(T key) {
         INode<T,V> result=searchNode(key);//result contains the node to be deleted
+        
+        boolean rightSibling; //edit for case 1
+        
         if(result.getKey()!=null){//if the node to be deleted is in the tree
 
             INode<T,V> child;
@@ -87,6 +124,7 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
             else {//Node is not a leaf node
                 INode<T,V> successor=getSuccessor(result);
                 result.setValue(successor.getValue());
+                result.setKey(successor.getKey()); // edit key must be changed
                 result=successor;
                 child=successor.getRightChild();
             }
@@ -98,10 +136,12 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
             if(result.getKey().compareTo(grandParent.getKey())>0){
                 grandParent.setRightChild(child);
                 sibling=grandParent.getLeftChild();
+                rightSibling = false;//edit for case 1
             }
             else {
                 grandParent.setLeftChild(child);
                 sibling=grandParent.getRightChild();
+                rightSibling = true;  //edit for case 1
             }
             if(parentColor==INode.RED||childColor==INode.RED){
                 child.setColor(INode.BLACK);
@@ -139,7 +179,20 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
                                 }
                             }
                         }  else if (true){ //TODO GABAL CASE1
-
+                            if (sibling.getRightChild().getColor() == INode.RED && rightSibling) {
+                                case1 = true;
+                                rightRightDel(grandParent, sibling);
+                            } else if (sibling.getLeftChild().getColor() == INode.RED && rightSibling) {
+                                case1 = true;
+                                rightLeftyDel(grandParent, sibling);
+                            }
+                            else if (sibling.getLeftChild().getColor() == INode.RED && !rightSibling) {
+                                case1 = true;
+                                leftLeftDel(grandParent, sibling);
+                            } else if (sibling.getRightChild().getColor() == INode.RED && !rightSibling) {
+                                case1 = true;
+                                leftRightDel(grandParent, sibling);
+                            }
                         }
                     }
                 }
