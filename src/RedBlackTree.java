@@ -19,7 +19,7 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
 
     @Override
     public void clear() {
-        this.root=null;
+        this.root=new Node<>();
     }
 
     @Override
