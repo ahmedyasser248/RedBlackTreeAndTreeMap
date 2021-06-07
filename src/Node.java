@@ -6,10 +6,15 @@ public class Node<T extends Comparable<T>, V> implements INode<T ,V>  {
     INode<T,V> leftChild;
     INode<T,V> rightChild;
     Boolean color = RED;
-    Node(){}
+    Node(){
+        this.leftChild = new Node<>();
+        this.rightChild = new Node<>();
+    }
     Node(T key,V value ){
         this.key = key;
         this.value = value;
+        this.leftChild = new Node<>();
+        this.rightChild = new Node<>();
     }
     Node(T key,V value,Node<T,V> parent ,Node<T,V> leftChild,Node<T,V> rightChild ){
         this.key = key;
