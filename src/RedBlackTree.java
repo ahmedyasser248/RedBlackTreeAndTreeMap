@@ -237,7 +237,7 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
                                     sibling=grandParent.getRightChild();
                                 }
                             }
-                        }  else if (true){ //TODO GABAL CASE1
+                        }  else { //TODO GABAL CASE1
                             if (sibling.getRightChild().getColor() == INode.RED && rightSibling) {
                                 case1 = true;
                                 rightRightDel(grandParent, sibling);
