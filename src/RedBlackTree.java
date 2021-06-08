@@ -115,9 +115,7 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
                     boolean color = parent.getColor();
                     parent.setColor(grandParent.getColor());
                     grandParent.setColor(color);
-
                     rotateLeft(grandParent);
-
                     newNode = parent;
                 }
             }
