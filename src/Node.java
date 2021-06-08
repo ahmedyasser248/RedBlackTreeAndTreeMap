@@ -1,3 +1,5 @@
+package com.paradigms;
+
 public class Node<T extends Comparable<T>, V> implements INode<T ,V>  {
 
     T key  ;
@@ -8,6 +10,10 @@ public class Node<T extends Comparable<T>, V> implements INode<T ,V>  {
     Boolean color = RED;
     Node(){
     }
+    Node(boolean color){
+        this.color = color;
+    }
+
     Node(T key,V value ){
         this.key = key;
         this.value = value;
@@ -87,10 +93,16 @@ public class Node<T extends Comparable<T>, V> implements INode<T ,V>  {
         RedBlackTree<Integer,Integer> obj = new RedBlackTree<>();
         obj.insert(30,1500);
         obj.insert(20,1500);
-        obj.insert(40,1500);
-        obj.insert(35,1500);
-        obj.insert(50,1500);
-        obj.rotateLeft(obj.getRoot());
+        obj.insert(10,1500);
+        obj.insert(15,1500);
+        obj.insert(70,1500);
+        obj.insert(80,1500);
+        obj.insert(45,1500);
+        obj.insert(75,1500);
+        obj.insert(25,1500);
+        obj.insert(26,1500);
+        obj.insert(100,1500);
+        //obj.rotateLeft(obj.getRoot());
         obj.print(obj.root);
     }
 }
