@@ -1,8 +1,7 @@
-package com.paradigms;
-
-import static com.paradigms.INode.*;
 
 public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,V>{
+    Boolean BLACK = false;
+    Boolean RED = true;
     INode<T,V> root ;
     RedBlackTree(INode<T,V> root){
         this.root = root;
@@ -24,6 +23,7 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
     @Override
     public void clear() {
         this.root=new Node<>();
+
     }
 
     @Override
