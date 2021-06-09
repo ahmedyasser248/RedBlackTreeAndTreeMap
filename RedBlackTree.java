@@ -28,7 +28,7 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
     }
 
 
-    public INode<T,V> searchNode(T key)  {
+    private INode<T,V> searchNode(T key)  {
         INode<T,V> n=this.root;
         while(n.getKey()!=null){//Search for the node to be deleted
             if(key.compareTo(n.getKey())==0){//The node to be deleted was found
@@ -179,158 +179,6 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
         return n;
     }
 
-    private  void rightRightDel(INode parent,INode sibling){
-        sibling.getRightChild().setColor(INode.BLACK);
-        sibling.setColor(parent.getColor());
-        parent.setColor(INode.BLACK);
-
-        rotateLeft(parent);
-    }
-
-    private  void rightLeftyDel(INode parent,INode sibling){
-        sibling.getLeftChild().setColor(INode.BLACK);
-        sibling.setColor(INode.RED);
-        INode temp = sibling.getLeftChild();
-        rotateRight(sibling);
-        sibling = temp;
-        rightRightDel(parent,sibling);
-    }
-    private  void leftLeftDel(INode parent,INode sibling){
-        sibling.getLeftChild().setColor(INode.BLACK);
-        sibling.setColor(parent.getColor());
-        parent.setColor(INode.BLACK);
-
-        rotateRight(parent);
-    }
-
-    private  void leftRightDel(INode parent,INode sibling){
-        sibling.getRightChild().setColor(INode.BLACK);
-        sibling.setColor(INode.RED);
-        INode temp = sibling.getRightChild();
-        rotateLeft(sibling);
-        sibling = temp;
-        leftLeftDel(parent,sibling);
-    }
-
-
-    public boolean olddelete(T key) {
-        if(key==null){
-            throw new RuntimeErrorException(new Error());
-        }
-        INode<T,V> result=searchNode(key);//result contains the node to be deleted
-
-        boolean rightSibling; //edit for case 1
-
-        if(result.getKey()!=null){//if the node to be deleted is in the tree
-
-            INode<T,V> child;
-            if(result.getLeftChild().getKey()==null){//The left child of the node is null
-                child=result.getRightChild();
-            }
-
-            else if (result.getRightChild().getKey()==null){//the right child of the node is null
-                child=result.getLeftChild();
-            }
-            else {//Node is not a leaf node
-                INode<T,V> successor=getSuccessor(result);
-                result.setValue(successor.getValue());
-                result.setKey(successor.getKey()); // edit key must be changed
-                result=successor;
-                child=successor.getRightChild();
-            }
-            INode<T,V> grandParent=result.getParent();
-            INode<T,V> sibling;
-            Boolean parentColor=result.getColor();
-            Boolean childColor=child.getColor();
-            Boolean isRoot=grandParent==null||grandParent.getKey()==null;
-            if(isRoot){
-                if(this.root.getRightChild().getKey()==null){
-                    this.root=this.root.getLeftChild();
-                    this.root.setColor(INode.BLACK);
-                    this.root.setParent(new Node<>(INode.BLACK));
-                }
-                else {
-                    this.root=this.root.getRightChild();
-                    this.root.setColor(INode.BLACK);
-                    this.root.setParent(new Node<> (INode.BLACK));
-                }
-                return true;
-            }
-
-            if(result.getKey().compareTo(grandParent.getKey())>=0){
-                grandParent.setRightChild(child);
-                sibling=grandParent.getLeftChild();
-                rightSibling = false;//edit for case 1
-            }
-            else {
-                grandParent.setLeftChild(child);
-                sibling=grandParent.getRightChild();
-                rightSibling = true;  //edit for case 1
-            }
-            child.setParent(grandParent);
-            if(parentColor==INode.RED||childColor==INode.RED){
-                child.setColor(INode.BLACK);
-            }
-            else {
-                boolean case1 = false;
-                while(!case1){//TODO set case1 to true at the end of case1
-                    if (sibling.getColor() == INode.RED) {//CASE 3
-                        grandParent.setColor(INode.RED);
-                        sibling.setColor(INode.BLACK);
-                        if (grandParent.getLeftChild() == sibling) {
-                            rotateRight(grandParent);
-                            sibling = grandParent.getLeftChild();
-                        } else {
-                            rotateLeft(grandParent);
-                            sibling = grandParent.getRightChild();
-                        }
-
-
-                    } else if (sibling.getColor() == INode.BLACK) { //TODO CASE 1 CASE 2;
-                        if(sibling.getKey()==null||sibling.getLeftChild().getColor()==INode.BLACK && sibling.getRightChild().getColor()==INode.BLACK){//TODO CASE 2
-                            if(sibling.getKey()!=null)
-                            sibling.setColor(INode.RED);
-                            if(grandParent.getColor()==INode.RED){//END of the deletion
-                                grandParent.setColor(INode.BLACK);
-                                case1=true;
-                            }else{
-                                child=grandParent;
-                                if(child==this.root){
-                                    case1=true;
-                                    continue;
-                                }
-                                grandParent = grandParent.getParent();
-                                if(child.getKey().compareTo(grandParent.getKey())>0){
-                                    sibling=grandParent.getLeftChild();
-                                }
-                                else {
-                                    sibling=grandParent.getRightChild();
-                                }
-                            }
-                        }  else { //TODO GABAL CASE1
-                            if (sibling.getRightChild().getColor() == INode.RED && rightSibling) {
-                                case1 = true;
-                                rightRightDel(grandParent, sibling);
-                            } else if (sibling.getLeftChild().getColor() == INode.RED && rightSibling) {
-                                case1 = true;
-                                rightLeftyDel(grandParent, sibling);
-                            }
-                            else if (sibling.getLeftChild().getColor() == INode.RED && !rightSibling) {
-                                case1 = true;
-                                leftLeftDel(grandParent, sibling);
-                            } else if (sibling.getRightChild().getColor() == INode.RED && !rightSibling) {
-                                case1 = true;
-                                leftRightDel(grandParent, sibling);
-                            }
-                        }
-                    }
-                }
-            }
-
-            return true;
-        }
-        return false;//TODO return value
-    }
     @Override
     public boolean delete(T key){
         return newdelete(this,key);
@@ -348,25 +196,25 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
         INode<T,V> child;
         if(nodeToBeDeleted.getLeftChild().getKey()==null){
             child=nodeToBeDeleted.getRightChild();
-            RB_Transplant(tree,nodeToBeDeleted,nodeToBeDeleted.getRightChild());
+            RB_Transplant(tree,nodeToBeDeleted,nodeToBeDeleted.getRightChild());//replace nodeToBeDeleted with its rightChild
         }
         else if (nodeToBeDeleted.getRightChild().getKey()==null){
             child=nodeToBeDeleted.getLeftChild();
-            RB_Transplant(tree,nodeToBeDeleted,nodeToBeDeleted.getLeftChild());
+            RB_Transplant(tree,nodeToBeDeleted,nodeToBeDeleted.getLeftChild());//replace nodeToBeDeleted with its leftChild
         }
-        else {
+        else {//Node to be deleted is internal
             temp=getSuccessor(nodeToBeDeleted);
             originalColor=temp.getColor();
             child=temp.getRightChild();
             if(temp.getParent()==nodeToBeDeleted){
                 child.setParent(temp);
             }
-            else {
+            else {//replace successor with its right child
                 RB_Transplant(tree,temp,temp.getRightChild());
                 temp.setRightChild(nodeToBeDeleted.getRightChild());
                 temp.getRightChild().setParent(temp);
             }
-            RB_Transplant(tree,nodeToBeDeleted,temp);
+            RB_Transplant(tree,nodeToBeDeleted,temp);//replace the node to be deleted with its successor
             temp.setLeftChild(nodeToBeDeleted.getLeftChild());
             temp.getLeftChild().setParent(temp);
             temp.setColor(nodeToBeDeleted.getColor());
@@ -392,23 +240,23 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
         while(child!=tree.root && child.getColor()==INode.BLACK){
             if(child==child.getParent().getLeftChild()){
                 INode<T,V> sibling=child.getParent().getRightChild();
-                if(sibling.getColor()==INode.RED){//case 3
+                if(sibling.getColor()==INode.RED){//Case 3 sibling is red
                     sibling.setColor(INode.BLACK);
                     child.getParent().setColor(INode.RED);
                     rotateLeft(child.getParent());
                     sibling=child.getParent().getRightChild();
                 }
-                if(sibling.getLeftChild().getColor()==INode.BLACK && sibling.getRightChild().getColor()==INode.BLACK){//case 2
+                if(sibling.getLeftChild().getColor()==INode.BLACK && sibling.getRightChild().getColor()==INode.BLACK){//Case 2 sibling with both its children are black
                     sibling.setColor(INode.RED);
                     child=child.getParent();
                 }
-                else if(sibling.getRightChild().getColor()==INode.BLACK){
+                else if(sibling.getRightChild().getColor()==INode.BLACK){//Case 1 Right left
                     sibling.getLeftChild().setColor(INode.BLACK);
                     sibling.setColor(INode.RED);
                     rotateRight(sibling);
                     sibling=child.getParent().getRightChild();
                 }
-                if(sibling.getRightChild().getColor()==INode.RED) {
+                if(sibling.getRightChild().getColor()==INode.RED) {//Case 1 Right Right
                     sibling.setColor(child.getParent().getColor());
                     child.getParent().setColor(INode.BLACK);
                     sibling.getRightChild().setColor(INode.BLACK);
@@ -418,32 +266,32 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
             }
             else {
                 INode<T,V> sibling=child.getParent().getLeftChild();
-                if(sibling.getColor()==INode.RED){//case 3
+                if(sibling.getColor()==INode.RED){//Case 3
                     sibling.setColor(INode.BLACK);
                     child.getParent().setColor(INode.RED);
                     rotateRight(child.getParent());
                     sibling=child.getParent().getLeftChild();
                 }
-                if(sibling.getRightChild().getColor()==INode.BLACK && sibling.getLeftChild().getColor()==INode.BLACK){//case 2
+                if(sibling.getRightChild().getColor()==INode.BLACK && sibling.getLeftChild().getColor()==INode.BLACK){//Case 2
                     sibling.setColor(INode.RED);
                     child=child.getParent();
                 }
-                else if(sibling.getLeftChild().getColor()==INode.BLACK){
+                else if(sibling.getLeftChild().getColor()==INode.BLACK){//Left right case
                     sibling.getRightChild().setColor(INode.BLACK);
                     sibling.setColor(INode.RED);
                     rotateLeft(sibling);
                     sibling=child.getParent().getLeftChild();
                 }
-                if(sibling.getLeftChild().getColor()==INode.RED) {
+                if(sibling.getLeftChild().getColor()==INode.RED) {//left left case
                     sibling.setColor(child.getParent().getColor());
                     child.getParent().setColor(INode.BLACK);
                     sibling.getLeftChild().setColor(INode.BLACK);
                     rotateRight(child.getParent());
-                    child = tree.root;
+                    child = tree.root;//To exit the loop
                 }
             }
         }
-        child.setColor(INode.BLACK);
+        child.setColor(INode.BLACK);//root could be red because of case 2
     }
 
     public void rotateRight( INode<T,V> nodeToRotate){
@@ -548,148 +396,6 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
     }
 
 
-    public static void main(String[] args){
 
-
-        RedBlackTree<Integer,String> obj = new RedBlackTree<>();
-        obj.insert(70,"soso");
-        obj.insert(98,"soso");
-        obj.insert(40,"soso");
-        obj.insert(99,"soso");
-        obj.insert(90,"soso");
-        obj.insert(94,"soso");
-        obj.insert(65,"soso");
-        obj.insert(20,"soso");
-        obj.insert(50,"soso");
-        obj.insert(67,"soso");
-        obj.insert(66,"soso");
-        obj.insert(69,"soso");
-        obj.insert(15,"soso");
-        obj.insert(30,"soso");
-        obj.insert(25,"soso");
-        obj.insert(32,"soso");
-        obj.insert(31,"soso");
-
-
-
-
-      /*  System.out.println("\n");
-        obj.delete(90);
-        System.out.println("\n");
-        System.out.println("--------------------------------------------------------------");
-
-
-        System.out.println("\n");
-        obj.delete(15);
-        System.out.println("\n");
-        System.out.println("--------------------------------------------------------------");
-
-
-        System.out.println("\n");
-        obj.delete(50);
-        System.out.println("\n");
-        System.out.println("--------------------------------------------------------------");
-
-
-        print2D(obj.root);
-        System.out.println("\n");
-        obj.delete(94);
-        System.out.println("\n");
-        System.out.println("--------------------------------------------------------------");
-
-
-
-        System.out.println("\n");
-        obj.delete(40);
-        System.out.println("\n");
-        System.out.println("--------------------------------------------------------------");
-
-        System.out.println("\n");
-        obj.delete(65);
-        System.out.println("\n");
-        System.out.println("--------------------------------------------------------------");
-
-
-        System.out.println("\n");
-        obj.delete(35);
-        System.out.println("\n");
-        System.out.println("--------------------------------------------------------------");
-
-
-        System.out.println("\n");
-        obj.delete(25);
-        System.out.println("\n");
-        System.out.println("--------------------------------------------------------------");
-
-
-        System.out.println("\n");
-        obj.delete(20);
-        System.out.println("\n");
-        System.out.println("--------------------------------------------------------------");
-
-
-        System.out.println("\n");
-        obj.delete(32);
-        System.out.println("\n");
-        System.out.println("--------------------------------------------------------------");
-        print2D(obj.getRoot());
-
-        System.out.println("\n");
-        obj.delete(31);
-        System.out.println("\n");
-        System.out.println("--------------------------------------------------------------");
-        print2D(obj.getRoot());
-
-        System.out.println("\n");
-        obj.delete(30);
-        System.out.println("\n");
-        System.out.println("--------------------------------------------------------------");
-        print2D(obj.getRoot());
-
-        System.out.println("\n");
-        obj.delete(69);
-        System.out.println("\n");
-        System.out.println("--------------------------------------------------------------");
-        print2D(obj.getRoot());
-
-        System.out.println("\n");
-        obj.delete(67);
-        System.out.println("\n");
-        System.out.println("--------------------------------------------------------------");
-        print2D(obj.getRoot());
-
-        System.out.println("\n");
-        obj.delete(99);
-        System.out.println("\n");
-        System.out.println("--------------------------------------------------------------");
-        print2D(obj.getRoot());
-
-        System.out.println("\n");
-        obj.delete(98);
-        System.out.println("\n");
-        System.out.println("--------------------------------------------------------------");
-        print2D(obj.getRoot());
-
-        System.out.println("\n");
-        obj.delete(70);
-        System.out.println("\n");
-        System.out.println("--------------------------------------------------------------");
-        print2D(obj.getRoot());
-
-        System.out.println("\n");
-        obj.delete(66);
-        System.out.println("\n");
-        System.out.println("--------------------------------------------------------------");
-        print2D(obj.getRoot());*/
-
-        System.out.println("\n");
-        obj.delete(98);
-        System.out.println("\n");
-        System.out.println("--------------------------------------------------------------");
-        print2D(obj.getRoot());
-
-
-
-    }
 
 }
