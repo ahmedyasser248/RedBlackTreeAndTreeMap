@@ -4,6 +4,7 @@ import javax.management.RuntimeErrorException;
 
 public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,V>{
     INode<T,V> root ;
+    boolean duplicate =false;
     RedBlackTree(INode<T,V> root){
         this.root = root;
         root.setParent(new Node<>());
@@ -75,8 +76,40 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
         newNode.setRightChild(new Node<>(INode.BLACK));
         newNode.setLeftChild(new Node<>(INode.BLACK));
         newNode.setParent(new Node<>(INode.BLACK));
-        this.root = insertAsBST(this.root, newNode);
-        fixUp(root,newNode);
+        if(root.isNull()){
+            this.root = newNode;
+        }else {
+            insertAsBST(newNode);
+        }
+        if(!duplicate) {
+            fixUp(root, newNode);
+        }
+        duplicate = false;
+
+    }
+    public void insertAsBST(INode<T,V> newNode ){
+        INode<T,V> temp = this.root;
+        INode<T,V> temp2 = null;
+        while(!temp.isNull()){
+            temp2 = temp;
+            if(newNode.getKey().compareTo(temp.getKey())<0){
+                temp=temp.getLeftChild();
+            }else if(newNode.getKey().compareTo(temp.getKey())>0) {
+                temp = temp.getRightChild();
+            }else {
+                duplicate = true;
+                temp.setValue(newNode.getValue());
+                return;
+            }
+        }
+        if(temp2.getKey().compareTo(newNode.getKey())>0){
+            temp2.setLeftChild(newNode);
+
+        }else {
+            temp2.setRightChild(newNode);
+        }
+        newNode.setParent(temp2);
+
     }
 
     public void fixUp(INode<T,V> root,INode<T,V> newNode){
@@ -84,7 +117,6 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
         while((newNode != root) && (newNode.getColor()!= INode.BLACK) && (newNode.getParent().getColor() == INode.RED)){
             Node<T,V> parent = (Node<T, V>) newNode.getParent();
             Node<T,V> grandParent = (Node<T, V>) parent.getParent();
-
             //if parent is a left child
             if(parent == grandParent.getLeftChild()){
                 Node<T,V> uncle = (Node<T,V>) grandParent.getRightChild();
@@ -256,6 +288,7 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
 
 
                     } else if (sibling.getColor() == INode.BLACK) { //TODO CASE 1 CASE 2
+                        System.out.println(sibling.getKey());
                         if(sibling.getLeftChild().getColor()==INode.BLACK && sibling.getRightChild().getColor()==INode.BLACK){//TODO CASE 2
                             sibling.setColor(INode.RED);
                             if(grandParent.getColor()==INode.RED){//END of the deletion
@@ -350,19 +383,7 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
         rightChild.setLeftChild(nodeToRotate);
         nodeToRotate.setParent(rightChild);
     }
-    public INode<T,V> insertAsBST(INode<T,V>root ,INode<T,V> newNode ){
-        if (root.isNull()){
-            return newNode;
-        }
-        if(root.getKey().compareTo(newNode.getKey())>0){
-            root.setLeftChild(insertAsBST(root.getLeftChild(),newNode));
-            root.getLeftChild().setParent(root);
-        }else{
-            root.setRightChild(insertAsBST(root.getRightChild(),newNode));
-            root.getRightChild().setParent(root);
-        }
-        return root;
-    }
+
     public void print(INode<T,V>root){
         System.out.println(root.getKey());
         if(!root.getLeftChild().isNull()){
@@ -441,6 +462,7 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
 
 
         print2D(obj.getRoot());
+
         System.out.println("\n");
         obj.delete(90);
         System.out.println("\n");
@@ -574,6 +596,7 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
         System.out.println("\n");
         System.out.println("--------------------------------------------------------------");
         print2D(obj.getRoot());
+
 
     }
 }
