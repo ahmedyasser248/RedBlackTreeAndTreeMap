@@ -1,8 +1,10 @@
 package eg.edu.alexu.csd.filestructure.redblacktree;
 
 import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class TreeMap<T extends Comparable<T>,V> {
+public class TreeMap<T extends Comparable<T>,V> implements ITreeMap<T,V> {
     RedBlackTree<T,V> tree=new RedBlackTree<>();
     @Override
     public Map.Entry ceilingEntry(Comparable key) {
@@ -30,7 +32,7 @@ public class TreeMap<T extends Comparable<T>,V> {
     }
 
     @Override
-    public Set<Map.Entry> entrySet() {
+    public Set<Entry<T, V>> entrySet() {
         return null;
     }
 
@@ -122,28 +124,52 @@ public class TreeMap<T extends Comparable<T>,V> {
         return t;
     }
 
+//    @Override
+//    public void put(Comparable key, Object value) {
+//        tree.insert((T)key,(V)value);
+//    }
+
     @Override
     public void put(T key, V value) {
             tree.insert(key,value);
     }
 
     @Override
-    public void putAll(Map map) {
-
+    public void putAll(Map<T,V> map) {
+        for (Entry<T, V> current : map.entrySet()) {
+            tree.insert(current.getKey(), current.getValue());
+        }
     }
 
     @Override
-    public boolean remove(Comparable key) {
-        return false;
+    public boolean remove(T key) {
+        return tree.delete(key);
     }
 
     @Override
     public int size() {
-        return 0;
+        int size = 0;
+        size = values().size();
+        return size;
     }
 
     @Override
-    public Collection values() {
-        return null;
+    public Collection<V> values() {
+        Queue<Node<T,V>> nodeQueue = new LinkedList<>();
+        Collection<V> vCollection = new ConcurrentLinkedQueue<>();
+        nodeQueue.add((Node<T, V>) tree.root);
+        while (!nodeQueue.isEmpty()){
+            Node<T,V> parent = nodeQueue.poll();
+            vCollection.add(parent.getValue());
+            if(!parent.getLeftChild().isNull()){
+                nodeQueue.add((Node<T, V>) parent.getLeftChild());
+            }
+            if(!parent.getRightChild().isNull()){
+                nodeQueue.add((Node<T, V>) parent.getRightChild());
+            }
+        }
+        return vCollection;
     }
+
+
 }
