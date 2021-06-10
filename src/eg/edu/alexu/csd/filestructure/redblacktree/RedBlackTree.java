@@ -5,6 +5,7 @@ import javax.management.RuntimeErrorException;
 public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,V>{
     INode<T,V> root ;
     boolean duplicate =false;
+    int size = 0;
     RedBlackTree(INode<T,V> root){
         this.root = root;
         root.setParent(new Node<>());
@@ -82,6 +83,7 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
             insertAsBST(newNode);
         }
         if(!duplicate) {
+            size++;
             fixUp(root, newNode);
         }
         duplicate = false;
@@ -191,6 +193,7 @@ public class RedBlackTree<T extends Comparable<T>,V> implements IRedBlackTree<T,
         if(nodeToBeDeleted.getKey()==null){
             return false;
         }
+        size--;
         INode<T,V> temp=nodeToBeDeleted;
         boolean originalColor=temp.getColor();
         INode<T,V> child;

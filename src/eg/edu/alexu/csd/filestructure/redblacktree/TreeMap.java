@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class TreeMap<T extends Comparable<T>,V> implements ITreeMap<T,V> {
     RedBlackTree<T,V> tree=new RedBlackTree<>();
+
     @Override
     public Map.Entry ceilingEntry(Comparable key) {
         return null;
@@ -132,6 +133,7 @@ public class TreeMap<T extends Comparable<T>,V> implements ITreeMap<T,V> {
     @Override
     public void put(T key, V value) {
             tree.insert(key,value);
+
     }
 
     @Override
@@ -148,9 +150,7 @@ public class TreeMap<T extends Comparable<T>,V> implements ITreeMap<T,V> {
 
     @Override
     public int size() {
-        int size = 0;
-        size = values().size();
-        return size;
+        return tree.size;
     }
 
     @Override
